@@ -117,19 +117,26 @@ class JsRenderer(BaseRenderer):
         fragments[key] = fragments.get(key, '') + val
         return ''
 
-def weave():
-    with open('tutorial_triangle.md', 'r') as fin:
+def weave(name):
+    with open(f'tutorial_{name}.md', 'r') as fin:
         rendered = mistletoe.markdown(fin, PygmentsRenderer)
     template = open('tutorial_template.html').read()
     rendered = template.replace('$BODY', rendered)
-    outfile = os.path.join(OUTPUT_DIR, 'tutorial_triangle.html')
+    outfile = os.path.join(OUTPUT_DIR, f'tutorial_{name}.html')
     with open(outfile, 'w') as fout:
         fout.write(rendered)
 
-def tangle():
-    with open('tutorial_triangle.md', 'r') as fin:
+def generate_demo_html(name):
+    template = open('demo_template.html').read()
+    rendered = template.replace('$SCRIPT', f'tutorial_{name}.js')
+    outfile = os.path.join(OUTPUT_DIR, f'demo_{name}.html')
+    with open(outfile, 'w') as fout:
+        fout.write(rendered)
+
+def tangle(name):
+    with open(f'tutorial_{name}.md', 'r') as fin:
         rendered = mistletoe.markdown(fin, JsRenderer)
-    outfile = os.path.join(OUTPUT_DIR, 'tutorial_triangle.js')
+    outfile = os.path.join(OUTPUT_DIR, f'tutorial_{name}.js')
     with open(outfile, 'w') as fout:
         fout.write(rendered)
 
@@ -141,17 +148,26 @@ def copy_filament_package():
     shutil.copyfile(jssrc, jsdst)
     shutil.copyfile(wasmsrc, wasmdst)
 
-def copy_demo_assets():
+def copy_demo_filamat(basename):
     matsrc = 'samples/web/public/material'
-    matsrc = os.path.join(BUILD_DIR, matsrc, 'bakedColor.filamat')
-    matdst = os.path.join(OUTPUT_DIR, 'bakedColor.filamat')
+    matsrc = os.path.join(BUILD_DIR, matsrc, basename + '.filamat')
+    matdst = os.path.join(OUTPUT_DIR, basename + '.filamat')
     shutil.copyfile(matsrc, matdst)
 
+def copy_demo_filamesh(src, dst):
+    src = os.path.join(BUILD_DIR, f'samples/web/public/{src}.filamesh')
+    dst = os.path.join(OUTPUT_DIR, dst + '.filamesh')
+    shutil.copyfile(src, dst)
+
 if __name__ == "__main__":
-    weave()
-    tangle()
+    for name in ["triangle", "monkeyjs"]:
+        weave(name)
+        tangle(name)
+        generate_demo_html(name)
     print(f"HTML and JS generated: {OUTPUT_DIR}")
     if os.path.exists(BUILD_DIR):
         copy_filament_package()
-        copy_demo_assets()
+        copy_demo_filamat('bakedColor')
+        copy_demo_filamat('texturedLit')
+        copy_demo_filamesh('monkey/mesh', 'monkey')
         print("Filament package copied.")

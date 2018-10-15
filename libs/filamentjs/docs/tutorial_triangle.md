@@ -1,4 +1,4 @@
-<iframe style="width:100%;height:200px;border:solid 1px gray" src="demo_triangle.html"></iframe>
+<iframe style="width:100%;height:200px;border:none" src="demo_triangle.html"></iframe>
 
 ## Literate programming
 
