@@ -24,6 +24,9 @@
 // copy because the input pointer becomes invalidated after allocating heap memory for the buffer
 // descriptor.
 
+/// Buffer ::function:: Constructs a [BufferDescriptor] by copying a typed array into the WASM heap.
+/// typedarray ::argument:: Data to consume (e.g. Uint8Array, Uint16Array, Float32Array)
+/// ::retval:: [BufferDescriptor]
 Filament.Buffer = function(typedarray) {
   console.assert(typedarray.buffer instanceof ArrayBuffer);
   console.assert(typedarray.byteLength > 0);
@@ -37,6 +40,12 @@ Filament.Buffer = function(typedarray) {
   return bd;
 };
 
+/// PixelBuffer ::function:: Constructs a [PixelBufferDescriptor] by copying a typed array into \
+/// the WASM heap.
+/// typedarray ::argument:: Data to consume (e.g. Uint8Array, Uint16Array, Float32Array)
+/// format ::argument:: [PixelDataFormat]
+/// datatype ::argument:: [PixelDataType]
+/// ::retval:: [PixelBufferDescriptor]
 Filament.PixelBuffer = function(typedarray, format, datatype) {
   console.assert(typedarray.buffer instanceof ArrayBuffer);
   console.assert(typedarray.byteLength > 0);
